@@ -139,21 +139,60 @@ for element in totalparterritoire:
 
 # Questions 12 et 14
 print("Questions 12 et 14")
-# Application la fonction nettoyage(...) sur vos colonnes ici
 
-# Appliquer la fonction :
-# liste = getliste(...)
+# Application de la fonction nettoyage(...) sur les colonnes
+distance = nettoyage(contenu["Dist_VO (km)"])
+export_val_2 = nettoyage(contenu["export_val"])
+import_val_2 = nettoyage(contenu["import_val"])
+export_ton_2 = nettoyage(contenu["export_ton"])
+import_ton_2 = nettoyage(contenu["import_ton"])
 
-# Mettre le code nouveau DataFrame ici et appeler la liste donnees2
+# Liste des territoires
+liste = getliste(contenu["origin_id"])
 
-# Compléter la boucle à partir des différents éléments précédents. Le nom des listes est celle proposée dans les commentaires.
-# parametres = []
-# quartiles = []
-# deciles = []
-# for element in range(0,len(donnees2.columns)):
-#     parametres2 = []
-#     distanceinterquartile = []
-#     distanceinterdecile = []
+# Nouveau DataFrame avec les données nettoyées
+donnees2titre = ["distance", "export_val_2", "import_val_2", "export_ton_2", "import_ton_2"]
+
+donnees2 = pd.DataFrame({
+    "distance": distance,
+    "export_val_2": export_val_2,
+    "import_val_2": import_val_2,
+    "export_ton_2": export_ton_2,
+    "import_ton_2": import_ton_2
+})
+
+# Calcul des paramètres statistiques
+parametres = []
+quartiles = []
+deciles = []
+
+for element in range(0,len(donnees2.columns)):
+    parametres2 = []
+    distanceinterquartile = []
+    distanceinterdecile = []
+
+    for element2 in range(0,len(liste)):
+        codeiso = liste[element2][0]
+        data2 = donnees2.iloc[liste[element2][1]:liste[element2][2],element]
+
+        moyenne = data2.mean().round(decimals=2)
+        mediane = data2.median().round(decimals=2)
+        mode = data2.mode()[0].round(decimals=2)
+        ecarttype = data2.std().round(decimals=2)
+        ecartabsolumoyen = np.abs(data2 - moyenne).mean().round(decimals=2)
+        etendue = (data2.max() - data2.min()).round(decimals=2)
+
+        parametres2.append([codeiso, moyenne, mediane, mode, ecarttype, ecartabsolumoyen, etendue])
+
+        quartile = data2.quantile([0.25, 0.75])
+        distanceinterquartile.append([codeiso, (quartile[0.75] - quartile[0.25]).round(decimals=2)])
+
+        decile = data2.quantile([0.1, 0.9])
+        distanceinterdecile.append([codeiso, (decile[0.9] - decile[0.1]).round(decimals=2)])
+
+    parametres.append(parametres2)
+    quartiles.append(distanceinterquartile)
+    deciles.append(distanceinterdecile)
 #     for element2 in range(0,len(liste)):
 #         codeiso = liste[element2][0]
 #         data2 = donnees2.iloc[liste[element2][1]:liste[element2][2],element]
@@ -176,15 +215,62 @@ print("Questions 12 et 14")
 
 # Question 13
 print("Question 13")
+print(parametres)
 
 # Question 14
-# print("Question 14")
+print("Question 14")
+print(quartiles)
+print(deciles)
 
 # Question 15
 print("Question 15")
 
+for element in range(0,len(donnees2.columns)):
+    plt.figure()
+    plt.boxplot(donnees2.iloc[:,element])
+    plt.title(donnees2titre[element])
+    plt.savefig("./img/boxplot_" + donnees2titre[element] + ".png")
+    plt.close()
+
 # Question 16
 print("Question 16")
+
+distance2 = nettoyage(contenu["Dist_VO (km)"])
+
+intervalles = [0, 0, 0, 0, 0, 0, 0, 0]
+
+for element in distance2:
+    if element > 0 and element <= 2500:
+        intervalles[0] += 1
+    elif element > 2500 and element <= 5000:
+        intervalles[1] += 1
+    elif element > 5000 and element <= 7500:
+        intervalles[2] += 1
+    elif element > 7500 and element <= 10000:
+        intervalles[3] += 1
+    elif element > 10000 and element <= 12500:
+        intervalles[4] += 1
+    elif element > 12500 and element <= 15000:
+        intervalles[5] += 1
+    elif element > 15000 and element <= 17500:
+        intervalles[6] += 1
+    elif element > 17500 and element <= 20000:
+        intervalles[7] += 1
+
+print(intervalles)
+
+nomsintervalles = ["0-2500", "2500-5000", "5000-7500", "7500-10000",
+                   "10000-12500", "12500-15000", "15000-17500", "17500-20000"]
+
+plt.figure()
+plt.bar(nomsintervalles, intervalles)
+plt.xticks(rotation=45)
+plt.title("Répartition des distances")
+plt.xlabel("Distance (km)")
+plt.ylabel("Effectif")
+plt.tight_layout()
+plt.savefig("./img/histogramme_distances.png")
+plt.close()
 
 # Question bonus
 print("Question bonus")
