@@ -91,28 +91,52 @@ print(contenu["import_ton"])
 
 # Question 9
 print("Question 9")
-export_ton = 0
-import_ton = 0
-
-for element in contenu["export_ton"]:
-    if element != "-":
-        export_ton += float(element)
-
-for element in contenu["import_ton"]:
-    if element != "-":
-        import_ton += float(element)
-
-print(export_ton)
-print(import_ton)
-
-# Question 10
-print("Question 10")
 export_ton = contenu["export_ton"]
 import_ton = contenu["import_ton"]
 
+# Question 10
+print("Question 10")
+effectif_export = 0
+effectif_import = 0
+
+for element in export_ton:
+    if element != "-":
+        effectif_export += 1
+
+for element in import_ton:
+    if element != "-":
+        effectif_import += 1
+
+print(effectif_export)
+print(effectif_import)
+
 # Question 11
 print("Question 11")
-# Appliquer la fonction listedesterritoires(...) sur vos colonnes ici
+
+origin_id = contenu["origin_id"]
+export_val = contenu["export_val"]
+import_val = contenu["import_val"]
+
+totalparterritoire = listedesterritoires(origin_id, export_val, import_val)
+
+territoires = []
+
+for element in totalparterritoire:
+    territoires.append(element[0])
+
+for element in totalparterritoire:
+    codeiso = element[0]
+    exportation = element[1]
+    importation = element[2]
+
+    valeurs = [exportation, importation]
+    noms = ["Exportations", "Importations"]
+
+    plt.bar(noms, valeurs)
+    plt.title(codeiso)
+    plt.savefig("./img/" + codeiso + ".png")
+    plt.close()
+
 # Questions 12 et 14
 print("Questions 12 et 14")
 # Application la fonction nettoyage(...) sur vos colonnes ici
